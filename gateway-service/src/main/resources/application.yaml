@@ -1,0 +1,36 @@
+server:
+  port: ${SERVER_PORT:8080}
+
+spring:
+  application:
+    name: gateway-service
+  cloud:
+    gateway:
+      routes:
+        # Route pour le microservice User (Authentification)
+        - id: user-service-route
+          uri: ${USER_SERVICE_URL}
+          predicates:
+            - Path=/auth/**, /users/**
+        
+        # Route pour le microservice Patient (Données MongoDB)
+        - id: patient-service-route
+          uri: ${PATIENT_SERVICE_URL}
+          predicates:
+            - Path=/api/patients/**
+
+        # Route par défaut vers le Front (Thymeleaf)
+        - id: front-service-route
+          uri: ${FRONT_SERVICE_URL}
+          predicates:
+            - Path=/**
+
+# Activation des endpoints de santé pour Docker
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info
+  endpoint:
+    health:
+      show-details: always

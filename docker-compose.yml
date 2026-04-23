@@ -1,0 +1,131 @@
+version: '3.8'
+
+services:
+  # Base de données pour les Utilisateurs
+  postgres-db:
+    image: postgres:${POSTGRES_VERSION}
+    container_name: postgres-db
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - micro-network
+
+  # Base de données pour les Patients
+  mongodb:
+    image: mongo:${MONGO_VERSION}
+    container_name: mongodb
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
+      MONGO_INITDB_DATABASE: ${MONGO_INITDB_DATABASE}
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test -u ${MONGO_USER} -p ${MONGO_PASSWORD} --authenticationDatabase admin --quiet
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - micro-network
+
+  # Microservice User
+  user-service:
+    build:
+      context: ./user-service
+      args:
+        - SERVICE_PORT=${USER_SERVICE_PORT} # On envoie la valeur du .env au Dockerfile
+    container_name: user-service
+    environment:
+      - SERVER_PORT=${USER_SERVICE_PORT}
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-db:5432/${POSTGRES_DB}
+      - SPRING_DATASOURCE_USERNAME=${POSTGRES_USER}
+      - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD}
+    depends_on:
+      postgres-db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:${USER_SERVICE_PORT}/actuator/health"]
+      interval: 20s
+      timeout: 10s
+      retries: 3
+    networks:
+      - micro-network
+
+  # Microservice Patient
+  patient-service:
+    build:
+      context: ./patient-service
+      args:
+        - SERVICE_PORT=${PATIENT_SERVICE_PORT} # On envoie la valeur du .env au Dockerfile
+    container_name: patient-service
+    environment:
+      - SERVER_PORT=${PATIENT_SERVICE_PORT}
+      - SPRING_DATA_MONGODB_URI=mongodb://${MONGO_USER}:${MONGO_PASSWORD}@mongodb:27017/${MONGO_INITDB_DATABASE}?authSource=admin
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:${PATIENT_SERVICE_PORT}/actuator/health"]
+      interval: 20s
+      timeout: 10s
+      retries: 3
+    networks:
+      - micro-network
+
+  # Microservice Front (Thymeleaf)
+  front-service:
+    build:
+      context: ./front-service
+      args:
+        - SERVICE_PORT=${FRONT_SERVICE_PORT} # On envoie la valeur du .env au Dockerfile
+    container_name: front-service
+    environment:
+      - SERVER_PORT=${FRONT_SERVICE_PORT}
+      - GATEWAY_URL=http://gateway:${GATEWAY_PORT}
+    networks:
+      - micro-network
+
+  # API Gateway
+  gateway-service:
+    build:
+      context: ./gateway-service
+      args:
+        - SERVICE_PORT=${GATEWAY_PORT} # On envoie la valeur du .env au Dockerfile
+    container_name: gateway-service
+    ports:
+      - "${GATEWAY_PORT}:${GATEWAY_PORT}"
+    environment:
+      - SERVER_PORT=${GATEWAY_PORT}
+      - USER_SERVICE_URL=http://user-service:${USER_SERVICE_PORT}
+      - PATIENT_SERVICE_URL=http://patient-service:${PATIENT_SERVICE_PORT}
+      - FRONT_SERVICE_URL=http://front-service:${FRONT_SERVICE_PORT}
+    depends_on:
+      user-service:
+        condition: service_healthy
+      patient-service:
+        condition: service_healthy
+      front-service:
+        condition: service_started
+    networks:
+      - micro-network
+
+networks:
+  micro-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  mongo_data:
