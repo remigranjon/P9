@@ -24,7 +24,7 @@ public class SecurityConfig {
                         .pathMatchers("/css/**", "/js/**", "/images/**").permitAll()
 
                         // Permettre l'accès à la page de login et au service d'auth
-                        .pathMatchers("/auth/**", "/login").permitAll()
+                        .pathMatchers("/auth/**", "/login", "/register").permitAll()
 
                         // Permettre aux healthchecks Docker de passer sans auth
                         .pathMatchers("/actuator/health/**").permitAll()

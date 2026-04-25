@@ -95,6 +95,8 @@ services:
     environment:
       - SERVER_PORT=${FRONT_SERVICE_PORT}
       - GATEWAY_URL=http://gateway:${GATEWAY_PORT}
+      - USER_SERVICE_URL=http://user-service:${USER_SERVICE_PORT}
+      - PATIENT_SERVICE_URL=http://patient-service:${PATIENT_SERVICE_PORT}
     networks:
       - micro-network
 

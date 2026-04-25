@@ -14,7 +14,7 @@ public class UserDetailsConfig {
     @Bean
     public ReactiveUserDetailsService userDetailsService(WebClient.Builder builder) {
         // On utilise l'URL injectée par Docker (ex: http://user-service:8081)
-        WebClient webClient = builder.baseUrl("http://user-service:${USER_SERVICE_PORT}").build();
+        WebClient webClient = builder.baseUrl(System.getenv("USER_SERVICE_URL")).build();
 
         return username -> webClient.get()
                 .uri("/users/find-by-username/{username}", username)
