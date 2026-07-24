@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modifier une note</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <nav class="navbar">
+        <a th:href="@{/}">Accueil</a>
+        <a th:href="@{/patients}">Patients</a>
+        <a th:href="@{/register}">Ajouter un utilisateur</a>
+        <a th:href="@{/logout}">Se déconnecter</a>
+    </nav>
+
+    <main class="page-shell">
+        <section class="form-card auth-card">
+            <h1 class="page-title">Modifier la note</h1>
+
+            <div th:if="${error}" class="error-message">
+                <p th:text="${error}"></p>
+            </div>
+
+            <form th:action="@{/patients/{patientId}/notes/{noteId}/edit(patientId=${patientId}, noteId=${noteId})}"
+                  method="post" class="styled-form">
+                <div class="form-group">
+                    <label for="content">Contenu</label>
+                    <textarea id="content" name="content" rows="7" required
+                              th:text="${content}"></textarea>
+                </div>
+
+                <div class="actions-row">
+                    <button type="submit" class="action-button">Enregistrer</button>
+                    <a class="action-link secondary" th:href="@{/patients/{id}(id=${patientId})}">Annuler</a>
+                </div>
+            </form>
+        </section>
+    </main>
+</body>
+</html>

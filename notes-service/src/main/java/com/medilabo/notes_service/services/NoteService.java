@@ -24,4 +24,17 @@ public class NoteService {
         return noteRepository.save(note);
     }
 
+    public Note update(String noteId, String content) {
+        Note note = noteRepository.findById(noteId)
+                .orElseThrow(() -> new IllegalArgumentException("Note not found with id: " + noteId));
+        note.setContent(content);
+        return noteRepository.save(note);
+    }
+
+    public void delete(String noteId) {
+        Note note = noteRepository.findById(noteId)
+                .orElseThrow(() -> new IllegalArgumentException("Note not found with id: " + noteId));
+        noteRepository.delete(note);
+    }
+
 }

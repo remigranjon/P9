@@ -29,8 +29,8 @@ public class HomeController {
 
     @PostMapping("/register")
     public String registerUser(@RequestParam String username,
-                               @RequestParam String password,
-                               Model model) {
+            @RequestParam String password,
+            Model model) {
         // Préparer la requête pour user-service
         String userServiceUrl = System.getenv("USER_SERVICE_URL") + "/auth/register";
         RestTemplate restTemplate = new RestTemplate();
@@ -64,7 +64,8 @@ public class HomeController {
         String patientServiceUrl = System.getenv("PATIENT_SERVICE_URL") + "/patients";
         RestTemplate restTemplate = new RestTemplate();
         try {
-            ResponseEntity<PatientResponse[]> response = restTemplate.getForEntity(patientServiceUrl, PatientResponse[].class);
+            ResponseEntity<PatientResponse[]> response = restTemplate.getForEntity(patientServiceUrl,
+                    PatientResponse[].class);
             if (response.getStatusCode().is2xxSuccessful()) {
                 model.addAttribute("patients", response.getBody());
             } else {
@@ -108,7 +109,8 @@ public class HomeController {
         String patientServiceUrl = System.getenv("PATIENT_SERVICE_URL") + "/patients/" + id;
         RestTemplate restTemplate = new RestTemplate();
         try {
-            ResponseEntity<PatientResponse> response = restTemplate.getForEntity(patientServiceUrl, PatientResponse.class);
+            ResponseEntity<PatientResponse> response = restTemplate.getForEntity(patientServiceUrl,
+                    PatientResponse.class);
             if (response.getStatusCode().is2xxSuccessful()) {
                 model.addAttribute("patient", response.getBody());
                 return "edit_patient";
@@ -146,11 +148,13 @@ public class HomeController {
         String riskServiceUrl = System.getenv("RISK_SERVICE_URL") + "/risk-level/" + id;
         RestTemplate restTemplate = new RestTemplate();
         try {
-            ResponseEntity<PatientResponse> response = restTemplate.getForEntity(patientServiceUrl, PatientResponse.class);
+            ResponseEntity<PatientResponse> response = restTemplate.getForEntity(patientServiceUrl,
+                    PatientResponse.class);
             if (response.getStatusCode().is2xxSuccessful()) {
                 System.out.println("Patient data: " + response.getBody());
                 model.addAttribute("patient", response.getBody());
-                ResponseEntity<NoteResponse[]> noteResponse = restTemplate.getForEntity(noteServiceUrl, NoteResponse[].class);
+                ResponseEntity<NoteResponse[]> noteResponse = restTemplate.getForEntity(noteServiceUrl,
+                        NoteResponse[].class);
                 if (noteResponse.getStatusCode().is2xxSuccessful()) {
                     model.addAttribute("notes", noteResponse.getBody());
                 } else {
@@ -199,5 +203,63 @@ public class HomeController {
             return "add_note";
         }
         return "redirect:/patients/" + id;
+    }
+
+    @PostMapping("/patients/{patientId}/notes/{noteId}/edit")
+    public String editNote(@PathVariable Long patientId, @PathVariable String noteId, @RequestParam String content,
+            Model model) {
+        String noteServiceUrl = System.getenv("NOTES_SERVICE_URL") + "/notes/note/" + noteId;
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<String> request = new HttpEntity<>(content, headers);
+
+        try {
+            restTemplate.postForEntity(noteServiceUrl, request, String.class);
+        } catch (Exception e) {
+            model.addAttribute("error", "Erreur lors de la modification de la note : " + e.getMessage());
+        }
+        return "redirect:/patients/" + patientId;
+    }
+
+    @PostMapping("/patients/{patientId}/notes/{noteId}/delete")
+    public String deleteNote(@PathVariable Long patientId, @PathVariable String noteId, Model model) {
+        String noteServiceUrl = System.getenv("NOTES_SERVICE_URL") + "/notes/note/" + noteId;
+        RestTemplate restTemplate = new RestTemplate();
+
+        try {
+            restTemplate.delete(noteServiceUrl);
+        } catch (Exception e) {
+            model.addAttribute("error", "Erreur lors de la suppression de la note : " + e.getMessage());
+        }
+        return "redirect:/patients/" + patientId;
+    }
+
+    @GetMapping("/patients/{patientId}/notes/{noteId}/edit")
+    public String editNotePage(@PathVariable Long patientId, @PathVariable String noteId, Model model) {
+        String noteServiceUrl = System.getenv("NOTES_SERVICE_URL") + "/notes/patient/" + patientId;
+        RestTemplate restTemplate = new RestTemplate();
+
+        try {
+            ResponseEntity<NoteResponse[]> response = restTemplate.getForEntity(noteServiceUrl, NoteResponse[].class);
+            if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
+                for (NoteResponse note : response.getBody()) {
+                    if (noteId.equals(note.getId())) {
+                        model.addAttribute("patientId", patientId);
+                        model.addAttribute("noteId", noteId);
+                        model.addAttribute("content", note.getContent());
+                        return "edit_note";
+                    }
+                }
+            }
+            model.addAttribute("error", "Note introuvable.");
+        } catch (Exception e) {
+            model.addAttribute("error", "Erreur lors du chargement de la note : " + e.getMessage());
+        }
+
+        model.addAttribute("patientId", patientId);
+        model.addAttribute("noteId", noteId);
+        model.addAttribute("content", "");
+        return "edit_note";
     }
 }

@@ -228,11 +228,13 @@ body {
     font-weight: 600;
     cursor: pointer;
     transition: background-color 0.2s ease, transform 0.2s ease;
+    text-decoration: none;
 }
 
 .action-button:hover {
     background: #0d9488;
     transform: translateY(-1px);
+    text-decoration: none;
 }
 
 .success-message {
@@ -243,6 +245,7 @@ body {
     color: #166534;
     border: 1px solid #bbf7d0;
 }
+
 .form-group textarea {
     padding: 12px 14px;
     border: 1px solid #cbd5e1;
@@ -289,4 +292,33 @@ body {
     border-color: #14b8a6;
     box-shadow: 0 0 0 4px rgba(20, 184, 166, 0.15);
     background: #ffffff;
+}
+
+.note-actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.inline-note-form {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.inline-note-form input {
+    min-width: 260px;
+    padding: 10px 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+    background: #f8fafc;
+}
+
+.danger-button {
+    background: #dc2626;
+}
+
+.danger-button:hover {
+    background: #b91c1c;
 }

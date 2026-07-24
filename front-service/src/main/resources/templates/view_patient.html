@@ -69,6 +69,18 @@
                     <tbody>
                         <tr th:each="note : ${notes}">
                             <td th:text="${note.content}"></td>
+                            <td class="note-actions">
+                                <a class="action-button secondary"
+                                    th:href="@{/patients/{patientId}/notes/{noteId}/edit(patientId=${patient.id}, noteId=${note.id})}">
+                                    Modifier
+                                </a>
+
+                                <form
+                                    th:action="@{/patients/{patientId}/notes/{noteId}/delete(patientId=${patient.id}, noteId=${note.id})}"
+                                    method="post" onsubmit="return confirm('Supprimer cette note ?');">
+                                    <button type="submit" class="action-button danger-button">Supprimer</button>
+                                </form>
+                            </td>
                         </tr>
                     </tbody>
                 </table>
