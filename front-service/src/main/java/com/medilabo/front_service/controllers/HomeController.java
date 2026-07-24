@@ -104,6 +104,18 @@ public class HomeController {
         return "redirect:/patients";
     }
 
+    @PostMapping("/patients/{id}/delete")
+    public String deletePatient(@PathVariable Long id, Model model) {
+        String patientServiceUrl = System.getenv("PATIENT_SERVICE_URL") + "/patients/" + id;
+        RestTemplate restTemplate = new RestTemplate();
+        try {
+            restTemplate.delete(patientServiceUrl);
+        } catch (Exception e) {
+            model.addAttribute("error", "Erreur lors de la suppression du patient : " + e.getMessage());
+        }
+        return "redirect:/patients";
+    }
+
     @GetMapping("/patients/edit/{id}")
     public String showEditPatientForm(@PathVariable Long id, Model model) {
         String patientServiceUrl = System.getenv("PATIENT_SERVICE_URL") + "/patients/" + id;

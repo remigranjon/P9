@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Patients</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
+
 <body>
     <nav class="navbar">
         <a th:href="@{/}">Accueil</a>
@@ -36,11 +38,13 @@
                     <tr th:each="patient : ${patients}">
                         <td th:text="${patient.firstName}"></td>
                         <td th:text="${patient.lastName}"></td>
-                        <td>
+                        <td class="note-actions"> 
                             <a class="action-link secondary"
-                               th:href="@{/patients/{id}(id=${patient.id})}">
-                                Détails
-                            </a>
+                                th:href="@{/patients/{id}(id=${patient.id})}"> Détails </a>
+                            <form th:action="@{/patients/{id}/delete(id=${patient.id})}" method="post"
+                                onsubmit="return confirm('Supprimer ce patient ?');">
+                                <button type="submit" class="action-button danger-button">Supprimer</button>
+                            </form>
                         </td>
                     </tr>
                 </tbody>
@@ -54,4 +58,5 @@
         </section>
     </main>
 </body>
+
 </html>
