@@ -9,7 +9,10 @@ import com.medilabo.user_service.models.DTO.responses.UserResponse;
 import com.medilabo.user_service.models.entities.User;
 import com.medilabo.user_service.repositories.interfaces.UserRepository;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@Slf4j
 public class UserService {
     @Autowired
     private UserRepository userRepository;
@@ -18,6 +21,8 @@ public class UserService {
 
     public UserResponse getUserByUsername(String username) throws Exception {
         User user = userRepository.findByUsername(username).orElse(null);
+        log.info("Fetching user by username: {}", username);
+        log.info("User found: {}", user != null ? user.getUsername() : "null");
         if (user == null) {
             throw new Exception("User not found");
         }

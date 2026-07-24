@@ -2,25 +2,39 @@ version: '3.8'
 
 services:
   # Base de données pour les Utilisateurs
-  postgres-db:
+  postgres-db-users:
     image: postgres:${POSTGRES_VERSION}
-    container_name: postgres-db
+    container_name: postgres-db-users
     environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
-    ports:
-      - "5432:5432"
+      POSTGRES_USER: ${POSTGRES_USERS_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_USERS_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_USERS_DB}
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres_users_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USERS_USER} -d ${POSTGRES_USERS_DB}"]
       interval: 10s
       timeout: 5s
       retries: 5
     networks:
       - micro-network
 
+  postgres-db-patients:
+      image: postgres:${POSTGRES_VERSION}
+      container_name: postgres-db-patients
+      environment:
+        POSTGRES_USER: ${POSTGRES_PATIENTS_USER}
+        POSTGRES_PASSWORD: ${POSTGRES_PATIENTS_PASSWORD}
+        POSTGRES_DB: ${POSTGRES_PATIENTS_DB}
+      volumes:
+        - postgres_patients_data:/var/lib/postgresql/data
+      healthcheck:
+        test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_PATIENTS_USER} -d ${POSTGRES_PATIENTS_DB}"]
+        interval: 10s
+        timeout: 5s
+        retries: 5
+      networks:
+        - micro-network
   # Base de données pour les Patients
   mongodb:
     image: mongo:${MONGO_VERSION}
@@ -29,8 +43,6 @@ services:
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
       MONGO_INITDB_DATABASE: ${MONGO_INITDB_DATABASE}
-    ports:
-      - "27017:27017"
     volumes:
       - mongo_data:/data/db
     healthcheck:
@@ -50,11 +62,11 @@ services:
     container_name: user-service
     environment:
       - SERVER_PORT=${USER_SERVICE_PORT}
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-db:5432/${POSTGRES_DB}
-      - SPRING_DATASOURCE_USERNAME=${POSTGRES_USER}
-      - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD}
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-db-users:5432/${POSTGRES_USERS_DB}
+      - SPRING_DATASOURCE_USERNAME=${POSTGRES_USERS_USER}
+      - SPRING_DATASOURCE_PASSWORD=${POSTGRES_USERS_PASSWORD}
     depends_on:
-      postgres-db:
+      postgres-db-users:
         condition: service_healthy
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:${USER_SERVICE_PORT}/actuator/health"]
@@ -73,12 +85,54 @@ services:
     container_name: patient-service
     environment:
       - SERVER_PORT=${PATIENT_SERVICE_PORT}
-      - SPRING_DATA_MONGODB_URI=mongodb://${MONGO_USER}:${MONGO_PASSWORD}@mongodb:27017/${MONGO_INITDB_DATABASE}?authSource=admin
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-db-patients:5432/${POSTGRES_PATIENTS_DB}
+      - SPRING_DATASOURCE_USERNAME=${POSTGRES_PATIENTS_USER}
+      - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PATIENTS_PASSWORD}
+    depends_on:
+      postgres-db-patients:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:${PATIENT_SERVICE_PORT}/actuator/health"]
+      interval: 20s
+      timeout: 10s
+      retries: 3
+    networks:
+      - micro-network
+
+  notes-service:
+    build:
+      context: ./notes-service
+      args:
+        - SERVICE_PORT=${NOTES_SERVICE_PORT} # On envoie la valeur du .env au Dockerfile
+    container_name: notes-service
+    environment:
+      - SERVER_PORT=${NOTES_SERVICE_PORT}
+      - MONGO_URL=mongodb://${MONGO_USER}:${MONGO_PASSWORD}@mongodb:27017/${MONGO_INITDB_DATABASE}?authSource=admin
+
     depends_on:
       mongodb:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:${PATIENT_SERVICE_PORT}/actuator/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:${NOTES_SERVICE_PORT}/actuator/health"]
+      interval: 20s
+      timeout: 10s
+      retries: 3
+    networks:
+      - micro-network
+
+  risk-service:
+    build:
+      context: ./risk-service
+      args:
+        - SERVICE_PORT=${RISK_SERVICE_PORT} # On envoie la valeur du .env au Dockerfile
+    container_name: risk-service
+    environment:
+      - SERVER_PORT=${RISK_SERVICE_PORT}
+      - PATIENT_SERVICE_URL=http://patient-service:${PATIENT_SERVICE_PORT}
+      - NOTES_SERVICE_URL=http://notes-service:${NOTES_SERVICE_PORT}
+
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:${RISK_SERVICE_PORT}/actuator/health"]
       interval: 20s
       timeout: 10s
       retries: 3
@@ -97,6 +151,8 @@ services:
       - GATEWAY_URL=http://gateway:${GATEWAY_PORT}
       - USER_SERVICE_URL=http://user-service:${USER_SERVICE_PORT}
       - PATIENT_SERVICE_URL=http://patient-service:${PATIENT_SERVICE_PORT}
+      - NOTES_SERVICE_URL=http://notes-service:${NOTES_SERVICE_PORT}
+      - RISK_SERVICE_URL=http://risk-service:${RISK_SERVICE_PORT}
     networks:
       - micro-network
 
@@ -114,6 +170,7 @@ services:
       - USER_SERVICE_URL=http://user-service:${USER_SERVICE_PORT}
       - PATIENT_SERVICE_URL=http://patient-service:${PATIENT_SERVICE_PORT}
       - FRONT_SERVICE_URL=http://front-service:${FRONT_SERVICE_PORT}
+      - NOTES_SERVICE_URL=http://notes-service:${NOTES_SERVICE_PORT}
     depends_on:
       user-service:
         condition: service_healthy
@@ -121,6 +178,10 @@ services:
         condition: service_healthy
       front-service:
         condition: service_started
+      notes-service:
+        condition: service_healthy
+      risk-service:
+        condition: service_healthy
     networks:
       - micro-network
 
@@ -129,5 +190,6 @@ networks:
     driver: bridge
 
 volumes:
-  postgres_data:
+  postgres_users_data:
+  postgres_patients_data:
   mongo_data:

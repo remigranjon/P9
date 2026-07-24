@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ajouter une note</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <nav class="navbar">
+        <a th:href="@{/}">Accueil</a>
+        <a th:href="@{/patients}">Patients</a>
+        <a th:href="@{/register}">Ajouter un utilisateur</a>
+        <a th:href="@{/logout}">Se déconnecter</a>
+    </nav>
+
+    <main class="page-shell">
+        <section class="form-card auth-card">
+            <h1 class="page-title">Nouvelle note</h1>
+
+            <form th:action="@{/patients/{id}/add-note(id=${patientId})}" method="post" class="styled-form">
+                <div class="form-group">
+                    <label for="content">Contenu de la note</label>
+                    <textarea id="content" name="content" rows="6" placeholder="Saisir la note du patient" required></textarea>
+                </div>
+
+                <div class="actions-row">
+                    <button type="submit" class="action-button">Créer</button>
+                    <a class="action-link secondary" th:href="@{/patients}">Retour</a>
+                </div>
+            </form>
+        </section>
+    </main>
+</body>
+</html>

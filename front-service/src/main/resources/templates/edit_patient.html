@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modification de patient</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <nav class="navbar">
+        <a th:href="@{/}">Accueil</a>
+        <a th:href="@{/patients}">Patients</a>
+        <a th:href="@{/register}">Ajouter un utilisateur</a>
+        <a th:href="@{/logout}">Se déconnecter</a>
+    </nav>
+
+    <main class="page-shell">
+        <section class="form-card patient-form-card">
+            <h1 class="page-title">Modifier le patient</h1>
+
+            <form th:action="@{/patients/edit/{id}(id=${patient.id})}" th:object="${patient}" method="post" class="styled-form">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="firstName">Prénom</label>
+                        <input id="firstName" th:field="*{firstName}" type="text" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="lastName">Nom</label>
+                        <input id="lastName" th:field="*{lastName}" type="text" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="dateOfBirth">Date de naissance</label>
+                        <input id="dateOfBirth" th:field="*{dateOfBirth}" type="date" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="gender">Genre</label>
+                        <input id="gender" th:field="*{gender}" type="text" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="street">N° de rue</label>
+                        <input id="street" th:field="*{street}" type="text">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="city">Ville</label>
+                        <input id="city" th:field="*{city}" type="text">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="zipCode">Code postal</label>
+                        <input id="zipCode" th:field="*{zipCode}" type="text">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="phoneNumber">N° de téléphone</label>
+                        <input id="phoneNumber" th:field="*{phoneNumber}" type="text">
+                    </div>
+                </div>
+
+                <div class="actions-row">
+                    <button type="submit" class="action-button">Modifier</button>
+                    <a class="action-link secondary" th:href="@{/patients}">Annuler</a>
+                </div>
+            </form>
+        </section>
+    </main>
+</body>
+</html>

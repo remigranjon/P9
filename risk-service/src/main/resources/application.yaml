@@ -1,0 +1,16 @@
+server:
+  port: ${SERVER_PORT:8085}
+
+spring:
+  application:
+    name: risk-service
+
+# Activation de l'Actuator pour le healthcheck Docker
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info
+  endpoint:
+    health:
+      show-details: always

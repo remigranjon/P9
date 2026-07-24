@@ -35,7 +35,7 @@ public class PatientController {
     }
 
     @PutMapping("/patients/{id}")
-    public ResponseEntity<PatientResponse> updatePatient(@PathVariable String id,
+    public ResponseEntity<PatientResponse> updatePatient(@PathVariable Long id,
             @Valid @RequestBody PatientRequest patient) {
        try {
            PatientResponse updatedPatient = patientService.updatePatient(id, patient);
@@ -46,7 +46,7 @@ public class PatientController {
     }
 
     @GetMapping("/patients/{id}")
-    public ResponseEntity<PatientResponse> getPatientById(@PathVariable String id) {
+    public ResponseEntity<PatientResponse> getPatientById(@PathVariable Long id) {
         try {
             PatientResponse patient = patientService.getPatientById(id);
             return ResponseEntity.ok(patient);

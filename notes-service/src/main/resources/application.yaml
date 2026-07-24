@@ -1,0 +1,18 @@
+server:
+  port: ${SERVER_PORT:8083}
+
+spring:
+  application:
+    name: notes-service
+  data:
+    mongodb:
+      uri: ${MONGO_URL:mongodb://localhost:27017/notes-service}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always

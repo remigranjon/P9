@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fiche patient</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+
+</head>
+
+<body>
+    <nav class="navbar">
+        <a th:href="@{/}">Accueil</a>
+        <a th:href="@{/patients}">Patients</a>
+        <a th:href="@{/register}">Ajouter un utilisateur</a>
+        <a th:href="@{/logout}">Se déconnecter</a>
+    </nav>
+
+    <main class="page-shell">
+        <h1 class="page-title">Détails du patient</h1>
+
+        <div th:if="${error}" class="error-message">
+            <p th:text="${error}"></p>
+        </div>
+
+        <section th:if="${patient}" class="section-card">
+            <h2 class="section-title">Informations du patient</h2>
+            <table class="info-table">
+                <thead>
+                    <tr>
+                        <th>Prénom</th>
+                        <th>Nom</th>
+                        <th>Date de naissance</th>
+                        <th>Genre</th>
+                        <th>N° de rue</th>
+                        <th>Ville</th>
+                        <th>Code postal</th>
+                        <th>N° de téléphone</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td th:text="${patient.firstName}"></td>
+                        <td th:text="${patient.lastName}"></td>
+                        <td th:text="${patient.dateOfBirth}"></td>
+                        <td th:text="${patient.gender}"></td>
+                        <td th:text="${patient.street}"></td>
+                        <td th:text="${patient.city}"></td>
+                        <td th:text="${patient.zipCode}"></td>
+                        <td th:text="${patient.phoneNumber}"></td>
+                        <td>
+                            <a class="action-link secondary"
+                               th:href="@{/patients/edit/{id}(id=${patient.id})}">
+                                Modifier
+                            </a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section class="section-card">
+            <h2 class="section-title">Notes du patient</h2>
+            <div th:if="${notes}">
+                <table class="notes-table">
+                    <tbody>
+                        <tr th:each="note : ${notes}">
+                            <td th:text="${note.content}"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="actions-row">
+                <a class="action-link"
+                   th:href="@{/patients/{id}/add-note(id=${patient.id})}">
+                    Ajouter une note
+                </a>
+            </div>
+        </section>
+
+        <section class="section-card" th:if="${riskLevel}">
+            <h2 class="section-title">Niveau de risque</h2>
+            <div class="risk-box">
+                <p th:text="'Niveau de risque: ' + ${riskLevel}"></p>
+            </div>
+        </section>
+    </main>
+</body>
+
+</html>

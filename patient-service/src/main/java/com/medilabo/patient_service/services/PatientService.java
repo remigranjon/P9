@@ -16,11 +16,11 @@ public class PatientService {
     @Autowired
     private PatientRepository patientRepository;
 
-    public void deletePatientById(String id) {
+    public void deletePatientById(Long id) {
         patientRepository.deleteById(id);
     }
 
-    public PatientResponse getPatientById(String id) throws RuntimeException {
+    public PatientResponse getPatientById(Long id) throws RuntimeException {
         Patient patient = patientRepository.findById(id).orElseThrow(() -> new RuntimeException("Patient not found"));
         return new PatientResponse(patient);
     }
@@ -30,7 +30,7 @@ public class PatientService {
         return new PatientResponse(savedPatient);
     }
 
-    public PatientResponse updatePatient(String id, PatientRequest patient) throws RuntimeException {
+    public PatientResponse updatePatient(Long id, PatientRequest patient) throws RuntimeException {
         Patient existingPatient = patientRepository.findById(id).orElseThrow(() -> new RuntimeException("Patient not found"));
         Patient updatedPatient = patient.toPatient();
         updatedPatient.setId(existingPatient.getId());

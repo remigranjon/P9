@@ -24,6 +24,8 @@ spring:
           uri: ${FRONT_SERVICE_URL}
           predicates:
             - Path=/**
+          filters:
+            - PreserveHostHeader
 
 # Activation des endpoints de santé pour Docker
 management:

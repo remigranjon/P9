@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accueil</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <nav class="navbar">
+        <a th:href="@{/}">Accueil</a> 
+        <a th:href="@{/patients}">Patients</a> 
+        <a th:href="@{/register}">Ajouter un utilisateur</a> 
+        <a th:href="@{/logout}">Se déconnecter</a>
+    </nav>
+
+    <div class="content">
+        <h1>Bienvenue sur Medilabo</h1>
+        <img th:src="@{/image/medilab.jpeg}" alt="Laboratoire médical" style="max-width: 100%; height: auto;">
+        <p>Votre plateforme de gestion de laboratoire médical.</p>
+    </div>
+</body>
+</html>

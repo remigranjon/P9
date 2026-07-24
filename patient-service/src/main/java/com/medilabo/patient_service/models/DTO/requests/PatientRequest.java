@@ -1,6 +1,5 @@
 package com.medilabo.patient_service.models.DTO.requests;
 
-import com.medilabo.patient_service.enums.PatientGender;
 import com.medilabo.patient_service.models.entities.Patient;
 
 import jakarta.validation.constraints.NotNull;
@@ -22,7 +21,9 @@ public class PatientRequest {
     private String dateOfBirth;
     @NotNull(message = "Gender is required")
     private String gender;
-    private AddressRequest address;
+    private String street;
+    private String city;
+    private String zipCode;
     private String phoneNumber;
 
     public Patient toPatient() {
@@ -30,8 +31,10 @@ public class PatientRequest {
                 .firstName(this.firstName)
                 .lastName(this.lastName)
                 .dateOfBirth(java.sql.Date.valueOf(this.dateOfBirth))
-                .gender(PatientGender.valueOf(this.gender))
-                .address(this.address.toAddress())
+                .gender(this.gender)
+                .street(this.street)
+                .city(this.city)
+                .zipCode(this.zipCode)
                 .phoneNumber(this.phoneNumber)
                 .build();
     }

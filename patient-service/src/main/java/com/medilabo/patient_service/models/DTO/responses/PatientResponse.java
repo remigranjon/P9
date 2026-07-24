@@ -1,5 +1,7 @@
 package com.medilabo.patient_service.models.DTO.responses;
 
+import java.text.SimpleDateFormat;
+
 import com.medilabo.patient_service.models.entities.Patient;
 
 import lombok.AllArgsConstructor;
@@ -12,21 +14,25 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class PatientResponse {
-    private String id;
+    private Long id;
     private String firstName;
     private String lastName;
     private String dateOfBirth;
     private String gender;
-    private AddressResponse address;
+    private String street;
+    private String city;
+    private String zipCode;
     private String phoneNumber;
 
     public PatientResponse(Patient patient) {
         this.id = patient.getId();
         this.firstName = patient.getFirstName();
         this.lastName = patient.getLastName();
-        this.dateOfBirth = patient.getDateOfBirth().toString();
-        this.gender = patient.getGender().name();
-        this.address = new AddressResponse(patient.getAddress().getStreet(), patient.getAddress().getCity(), patient.getAddress().getZipCode());
+        this.dateOfBirth = new SimpleDateFormat("yyyy-MM-dd").format(patient.getDateOfBirth());
+        this.gender = patient.getGender();
+        this.street = patient.getStreet();
+        this.city = patient.getCity();
+        this.zipCode = patient.getZipCode();
         this.phoneNumber = patient.getPhoneNumber();
     
     }

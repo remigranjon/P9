@@ -34,9 +34,10 @@ public class SecurityConfig {
 
                 // 2. Configuration du formulaire de login (géré par la Gateway ou redirigé)
                 .formLogin(Customizer.withDefaults())
+                
 
                 // 3. Configuration de la déconnexion
-                .logout(logout -> logout.logoutUrl("/auth/logout"));
+                .logout(logout -> logout.logoutUrl("/logout"));
 
         return http.build();
     }
