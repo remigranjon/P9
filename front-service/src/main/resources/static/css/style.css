@@ -273,3 +273,20 @@ body {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 18px 20px;
 }
+
+.form-group select {
+    padding: 12px 14px;
+    border: 1px solid #cbd5e1;
+    border-radius: 12px;
+    font-size: 1rem;
+    background: #f8fafc;
+    color: #1f2937;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-group select:focus {
+    outline: none;
+    border-color: #14b8a6;
+    box-shadow: 0 0 0 4px rgba(20, 184, 166, 0.15);
+    background: #ffffff;
+}

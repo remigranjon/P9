@@ -45,14 +45,15 @@
                         <td th:text="${patient.firstName}"></td>
                         <td th:text="${patient.lastName}"></td>
                         <td th:text="${patient.dateOfBirth}"></td>
-                        <td th:text="${patient.gender}"></td>
+                        <td
+                            th:text="${patient.gender == 'M' ? 'Masculin' : (patient.gender == 'F' ? 'Féminin' : patient.gender)}">
+                        </td>
                         <td th:text="${patient.street}"></td>
                         <td th:text="${patient.city}"></td>
                         <td th:text="${patient.zipCode}"></td>
                         <td th:text="${patient.phoneNumber}"></td>
                         <td>
-                            <a class="action-link secondary"
-                               th:href="@{/patients/edit/{id}(id=${patient.id})}">
+                            <a class="action-link secondary" th:href="@{/patients/edit/{id}(id=${patient.id})}">
                                 Modifier
                             </a>
                         </td>
@@ -74,8 +75,7 @@
             </div>
 
             <div class="actions-row">
-                <a class="action-link"
-                   th:href="@{/patients/{id}/add-note(id=${patient.id})}">
+                <a class="action-link" th:href="@{/patients/{id}/add-note(id=${patient.id})}">
                     Ajouter une note
                 </a>
             </div>

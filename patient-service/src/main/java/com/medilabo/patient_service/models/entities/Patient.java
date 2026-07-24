@@ -2,7 +2,7 @@ package com.medilabo.patient_service.models.entities;
 
 import java.util.Date;
 
-
+import com.medilabo.patient_service.enums.Gender;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -33,8 +33,8 @@ public class Patient {
     private String lastName;
     @NotNull(message = "Date of birth is required")
     private Date dateOfBirth;
-    @NotEmpty(message = "Gender is required")
-    private String gender;
+    @NotNull(message = "Gender is required")
+    private Gender gender;
     private String street;
     private String city;
     private String zipCode;

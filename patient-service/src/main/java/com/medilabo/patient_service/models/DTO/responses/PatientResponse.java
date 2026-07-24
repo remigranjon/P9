@@ -29,7 +29,7 @@ public class PatientResponse {
         this.firstName = patient.getFirstName();
         this.lastName = patient.getLastName();
         this.dateOfBirth = new SimpleDateFormat("yyyy-MM-dd").format(patient.getDateOfBirth());
-        this.gender = patient.getGender();
+        this.gender = patient.getGender().getCode();
         this.street = patient.getStreet();
         this.city = patient.getCity();
         this.zipCode = patient.getZipCode();

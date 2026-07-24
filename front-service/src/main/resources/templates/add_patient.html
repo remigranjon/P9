@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ajouter un patient</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
+
 <body>
     <nav class="navbar">
         <a th:href="@{/}">Accueil</a>
@@ -37,7 +39,11 @@
 
                     <div class="form-group">
                         <label for="gender">Genre</label>
-                        <input id="gender" th:field="*{gender}" type="text" required>
+                        <select id="gender" th:field="*{gender}" required>
+                            <option value="">Sélectionner un genre</option>
+                            <option value="M">Masculin</option>
+                            <option value="F">Féminin</option>
+                        </select>
                     </div>
 
                     <div class="form-group">
@@ -69,4 +75,5 @@
         </section>
     </main>
 </body>
+
 </html>

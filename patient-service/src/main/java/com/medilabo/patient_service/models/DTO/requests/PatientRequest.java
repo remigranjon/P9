@@ -1,7 +1,7 @@
 package com.medilabo.patient_service.models.DTO.requests;
 
 import com.medilabo.patient_service.models.entities.Patient;
-
+import com.medilabo.patient_service.enums.Gender;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -31,7 +31,7 @@ public class PatientRequest {
                 .firstName(this.firstName)
                 .lastName(this.lastName)
                 .dateOfBirth(java.sql.Date.valueOf(this.dateOfBirth))
-                .gender(this.gender)
+                .gender(Gender.fromCode(this.gender))
                 .street(this.street)
                 .city(this.city)
                 .zipCode(this.zipCode)
