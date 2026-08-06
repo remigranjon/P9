@@ -23,7 +23,7 @@ Ajouter/valider les index sur les requêtes fréquentes.
 Limiter les retours volumineux (pagination, filtres).
 Éviter les lectures complètes quand seul un champ est utile.
 
-5) Logs responsables
+5) Logs simplifiés
 Passer en niveau INFO en production (DEBUG seulement en diagnostic).
 Éviter les logs verbeux à chaque requête.
 
