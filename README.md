@@ -1,4 +1,43 @@
-Green Code - Plan d'amélioration
+# Format du .env 
+
+POSTGRES_USERS_USER=XXX
+
+POSTGRES_USERS_PASSWORD=XXX
+
+POSTGRES_USERS_DB=XXX
+
+POSTGRES_PATIENTS_USER=XXX
+
+POSTGRES_PATIENTS_PASSWORD=XXX
+
+POSTGRES_PATIENTS_DB=XXX
+
+MONGO_INITDB_DATABASE=XXX
+
+MONGO_USER=XXX
+
+MONGO_PASSWORD=XXX
+
+GATEWAY_PORT=XXX
+
+USER_SERVICE_PORT=XXX
+
+PATIENT_SERVICE_PORT=XXX
+
+FRONT_SERVICE_PORT=XXX
+
+NOTES_SERVICE_PORT=XXX
+
+RISK_SERVICE_PORT=XXX
+
+
+POSTGRES_VERSION=XXX
+
+MONGO_VERSION=XXX
+
+
+
+# Green Code - Plan d'amélioration
 
 Ce projet en microservices consomme des ressources (CPU, mémoire, réseau, stockage).
 L'objectif est de réduire cette consommation sans dégrader la qualité fonctionnelle.
